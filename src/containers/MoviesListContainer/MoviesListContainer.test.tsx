@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import * as fromUseMovies from '../../hooks/useMovies';
 import { movies } from '../../mocks/movies';
-import { Movie } from '../../models/Movie';
 import { MoviesListContainer } from './MoviesListContainer';
+
+const useRouter = jest.spyOn(require('next/router'), 'useRouter');
 
 describe('MoviesListContainer', () => {
   const mockStore = configureStore([thunk]);
@@ -19,8 +19,22 @@ describe('MoviesListContainer', () => {
     },
   });
 
+  const mockedPush = jest.fn();
+
   beforeEach(() => {
     jest.spyOn(store, 'dispatch').mockImplementation();
+  });
+
+  beforeEach(() => {
+    useRouter.mockImplementationOnce(() => ({
+      pathname: '/search',
+      query: { sortBy: 'release_date', movie: '55555' },
+      push: mockedPush,
+    }));
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should show loading indicator', () => {
@@ -30,7 +44,7 @@ describe('MoviesListContainer', () => {
       isLoading: true,
     });
 
-    const { getByText } = renderMoviesListContainerInProviderAndRouter();
+    const { getByText } = renderMoviesListContainerInProvider();
 
     const loadingIndicator = getByText('Loading...');
     expect(loadingIndicator).toBeInTheDocument();
@@ -43,7 +57,7 @@ describe('MoviesListContainer', () => {
       isLoading: false,
     });
 
-    const { getByText } = renderMoviesListContainerInProviderAndRouter();
+    const { getByText } = renderMoviesListContainerInProvider();
 
     const errorIndicator = getByText('Fetching Error!');
     expect(errorIndicator).toBeInTheDocument();
@@ -56,35 +70,31 @@ describe('MoviesListContainer', () => {
       isLoading: false,
     });
 
-    const { getAllByRole } = renderMoviesListContainerInProviderAndRouter();
+    const { getAllByRole } = renderMoviesListContainerInProvider();
 
     const moviesList = getAllByRole('listitem');
     expect(moviesList.length).toBe(movies.length);
   });
 
-/**
- * Uncomment to test error boundary: commented out as it throws errors to test console
- *
- it('should activate error boundary on movies list error', () => {
+  /**
+   * Uncomment to test error boundary: commented out as it throws errors to test console
+   *
+   it('should activate error boundary on movies list error', () => {
      jest.spyOn(fromUseMovies, 'useMovies').mockReturnValue({
        movies: [...movies, null] as Movie[],
        isError: false,
        isLoading: false,
      });
-
-     const { getByText } = renderMoviesListContainerInProviderAndRouter();
-
+     const { getByText } = renderMoviesListContainerInProvider();
      const errorBoundary = getByText(`Something went wrong with MoviesListContainer!`);
      expect(errorBoundary).toBeInTheDocument();
    });
-*/
+   */
 
-  function renderMoviesListContainerInProviderAndRouter() {
+  function renderMoviesListContainerInProvider() {
     return render(
       <Provider store={store}>
-        <MemoryRouter>
-          <MoviesListContainer />
-        </MemoryRouter>
+        <MoviesListContainer />
       </Provider>
     );
   }

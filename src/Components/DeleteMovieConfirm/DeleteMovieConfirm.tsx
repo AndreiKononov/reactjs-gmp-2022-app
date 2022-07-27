@@ -3,7 +3,7 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useQueryParams } from '../../hooks/useQueryParams';
 import { AsyncSubmitStatus } from '../../models/AsyncSubmitStatus';
 import { deleteMovieById, fetchMovies } from '../../store/moviesReducer';
-import './DeleteMovieConfirm.scss';
+// import './DeleteMovieConfirm.scss';
 
 interface DeleteMovieFormValue {
   movieId: number;
@@ -19,7 +19,7 @@ const DeleteMovieConfirm = ({ movieId, handleClose }: DeleteMovieProps) => {
 
   const handleFormSubmit = async ({ movieId }, { setSubmitting, setStatus }: FormikHelpers<{ movieId: number }>) => {
     try {
-      await dispatch(deleteMovieById(movieId)).unwrap();
+      await dispatch(deleteMovieById(movieId))
       dispatch(fetchMovies(routerQueryParams));
       handleClose();
       setStatus(AsyncSubmitStatus.SUBMIT_SUCCESS);

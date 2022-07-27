@@ -1,30 +1,36 @@
 import { useId } from 'react';
 import { Formik, Form } from 'formik';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { TextField } from '../TextField/TextField';
-
-import './SearchForm.scss';
+// import './SearchForm.scss';
 
 export default function SearchForm() {
-  const navigate = useNavigate();
-  const { searchQuery } = useParams();
-  const [searchParams] = useSearchParams();
+  const router = useRouter();
+  const { search: searchQuery } = router.query;
   const inputIdPrefix = useId();
 
   const handleSubmit = ({ searchValue }: { searchValue: string }) => {
-    navigate(
+    if (searchValue) {
+      router.pathname = '/search/[search]';
+      router.query.search = searchValue.toLocaleLowerCase();
+    } else {
+      router.pathname = '/search';
+      delete router.query.search;
+    }
+    router.push(
       {
-        pathname: `/search/${searchValue.toLowerCase()}`,
-        search: searchParams.toString(),
+        pathname: router.pathname,
+        query: router.query,
       },
-      { replace: true }
+      undefined,
+      { shallow: true }
     );
   };
 
   return (
     <div className="searchForm-wrapper">
       <h1 className="searchForm-title">Find your movie</h1>
-      <Formik initialValues={{ searchValue: searchQuery || '' }} onSubmit={handleSubmit}>
+      <Formik initialValues={{ searchValue: (searchQuery as string) || '' }} onSubmit={handleSubmit}>
         <Form className="searchForm">
           <TextField
             name="searchValue"

@@ -1,4 +1,4 @@
-import './AddMovieBtn.scss';
+// import './AddMovieBtn.scss';
 
 interface AddMovieBtnProps {
   handleClick: () => void;

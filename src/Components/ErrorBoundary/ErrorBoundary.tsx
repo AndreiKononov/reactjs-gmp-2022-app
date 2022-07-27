@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from 'react';
-import './ErrorBoundary.scss';
+// import './ErrorBoundary.scss';
 
 type ErrorBoundaryProps = PropsWithChildren<{
   componentName: string;

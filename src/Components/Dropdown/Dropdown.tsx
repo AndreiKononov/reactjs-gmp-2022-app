@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
-import './Dropdown.scss';
+// import './Dropdown.scss';
 
 interface IDropdownProps {
   items: Array<{ id: number; title: string }>;

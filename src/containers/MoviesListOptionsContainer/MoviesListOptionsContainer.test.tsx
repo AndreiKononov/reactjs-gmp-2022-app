@@ -2,13 +2,14 @@ import { render } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import * as fromReactRouterDom from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import * as fromUseMovies from '../../hooks/useMovies';
 import { sortOptions } from './sortOptions';
 import { genres } from './genres';
 import { MoviesListOptionsContainer } from './MoviesListOptionsContainer';
+
+const useRouter = jest.spyOn(require('next/router'), 'useRouter');
 
 describe('MoviesListOptionsContainer', () => {
   const mockStore = configureStore([thunk]);
@@ -20,12 +21,26 @@ describe('MoviesListOptionsContainer', () => {
     },
   });
 
+  const mockedPush = jest.fn();
+
   beforeEach(() => {
     jest.spyOn(fromUseMovies, 'useMovies').mockReturnValue(store.getState().movies);
   });
 
+  beforeEach(() => {
+    useRouter.mockImplementationOnce(() => ({
+      pathname: '/search',
+      query: { sortBy: 'release_date', genre: 'action' },
+      push: mockedPush,
+    }));
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should render filter panel, sort panel and number of movies found', () => {
-    const { getByText } = renderMoviesListOptionsContainerInProviderAndRouter();
+    const { getByText } = renderMoviesListOptionsContainerInProvider();
 
     const sortPanel = getByText(/sort by/i);
     const filterPanel = getByText(/fantasy/i);
@@ -37,15 +52,9 @@ describe('MoviesListOptionsContainer', () => {
   });
 
   it('should set sortBy query parameter on sort panel option select', () => {
-    const mockSetSearchParams = jest.fn();
-    const mockInitialSearchParams = new URLSearchParams('?sortBy=release_date&genre=action');
-    jest.spyOn(fromReactRouterDom, 'useSearchParams').mockReturnValue([mockInitialSearchParams, mockSetSearchParams]);
+    const selectedSortBy = sortOptions[1];
 
-    const selectedSortBy = sortOptions[1]; // value: 'vote_average', label: 'Rating'
-
-    const setQueryParamSpy = jest.spyOn(mockInitialSearchParams, 'set');
-
-    const { getByText } = renderMoviesListOptionsContainerInProviderAndRouter();
+    const { getByText } = renderMoviesListOptionsContainerInProvider();
 
     const sortPanel = getByText('Release Date');
     expect(sortPanel).toBeInTheDocument();
@@ -55,61 +64,66 @@ describe('MoviesListOptionsContainer', () => {
     expect(ratingOption).toBeInTheDocument();
     userEvent.click(ratingOption);
 
-    const expectedQueryParams = new URLSearchParams('?sortBy=vote_average&genre=action');
-
-    expect(setQueryParamSpy).toHaveBeenCalledWith('sortBy', selectedSortBy.value);
-    expect(mockInitialSearchParams.get('sortBy')).toBe(selectedSortBy.value);
-    expect(mockSetSearchParams).toHaveBeenCalledWith(expectedQueryParams);
+    expect(mockedPush).toHaveBeenCalledWith(
+      {
+        pathname: `/search`,
+        query: {
+          sortBy: selectedSortBy.value,
+          genre: 'action',
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
   });
 
   it('should set genre query parameter on genre panel option select', () => {
-    const mockSetSearchParams = jest.fn();
-    const mockInitialSearchParams = new URLSearchParams('?sortBy=release_date&genre=action');
-    jest.spyOn(fromReactRouterDom, 'useSearchParams').mockReturnValue([mockInitialSearchParams, mockSetSearchParams]);
+    const selectedGenre = genres[3];
 
-    const selectedGenre = genres[3]; // value: 'fantasy', label: 'Fantasy'
+    const { getByText } = renderMoviesListOptionsContainerInProvider();
 
-    const setQueryParamSpy = jest.spyOn(mockInitialSearchParams, 'set');
-
-    const { getByText } = renderMoviesListOptionsContainerInProviderAndRouter();
-
-    const genrePanelButton = getByText(/fantasy/i);
+    const genrePanelButton = getByText(selectedGenre.label);
     expect(genrePanelButton).toBeInTheDocument();
     userEvent.click(genrePanelButton);
 
-    const expectedQueryParams = new URLSearchParams('?sortBy=release_date&genre=fantasy');
-
-    expect(setQueryParamSpy).toHaveBeenCalledWith('genre', selectedGenre.value);
-    expect(mockInitialSearchParams.get('genre')).toBe(selectedGenre.value);
-    expect(mockSetSearchParams).toHaveBeenCalledWith(expectedQueryParams);
+    expect(mockedPush).toHaveBeenCalledWith(
+      {
+        pathname: `/search`,
+        query: {
+          sortBy: 'release_date',
+          genre: selectedGenre.value,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
   });
 
   it('should delete genre query parameter on "All" genre panel option select', () => {
-    const mockSetSearchParams = jest.fn();
-    const mockInitialSearchParams = new URLSearchParams('?sortBy=release_date&genre=action');
-    jest.spyOn(fromReactRouterDom, 'useSearchParams').mockReturnValue([mockInitialSearchParams, mockSetSearchParams]);
+    const selectedGenre = genres[0];
 
-    const deleteQueryParamSpy = jest.spyOn(mockInitialSearchParams, 'delete');
+    const { getByText } = renderMoviesListOptionsContainerInProvider();
 
-    const { getByText } = renderMoviesListOptionsContainerInProviderAndRouter();
-
-    const genrePanelButton = getByText(/all/i);
+    const genrePanelButton = getByText(selectedGenre.label);
     expect(genrePanelButton).toBeInTheDocument();
     userEvent.click(genrePanelButton);
 
-    const expectedQueryParams = new URLSearchParams('?sortBy=release_date');
-
-    expect(deleteQueryParamSpy).toHaveBeenCalledWith('genre');
-    expect(mockInitialSearchParams.get('genre')).toBeNull();
-    expect(mockSetSearchParams).toHaveBeenCalledWith(expectedQueryParams);
+    expect(mockedPush).toHaveBeenCalledWith(
+      {
+        pathname: `/search`,
+        query: {
+          sortBy: 'release_date',
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
   });
 
-  function renderMoviesListOptionsContainerInProviderAndRouter() {
+  function renderMoviesListOptionsContainerInProvider() {
     return render(
       <Provider store={store}>
-        <fromReactRouterDom.BrowserRouter>
-          <MoviesListOptionsContainer />
-        </fromReactRouterDom.BrowserRouter>
+        <MoviesListOptionsContainer />
       </Provider>
     );
   }

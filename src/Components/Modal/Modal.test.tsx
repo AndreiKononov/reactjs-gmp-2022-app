@@ -14,7 +14,11 @@ describe('Modal', () => {
   it('should call createPortal', () => {
     const mockHandleClose = jest.fn();
 
-    render(<Modal title="Test title" handleClose={mockHandleClose} />);
+    render(
+      <Modal title="Test title" handleClose={mockHandleClose}>
+        Modal content
+      </Modal>
+    );
 
     expect(mockCreatePortal).toHaveBeenCalled();
   });

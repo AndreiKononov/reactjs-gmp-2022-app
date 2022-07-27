@@ -3,8 +3,8 @@ import { transformDuration } from '../../utils/transformDuration';
 import { Movie } from '../../models/Movie';
 import { getYear } from '../../utils/getYearFromDate';
 import { joinGenres } from '../../utils/joinGenresWithComma';
-import { handleImgOnError } from '../../utils/handleImgOnError';
-import './MovieCardSelected.scss';
+import { NextImageCustom } from '../NextImageCustom/NextImageCustom';
+// import './MovieCardSelected.scss';
 
 interface MovieCardSelectedProps {
   movie: Movie;
@@ -15,7 +15,9 @@ function MovieCardSelectedComponent({ movie }: MovieCardSelectedProps) {
 
   return (
     <div className="movie-card-selected">
-      <img className="movie-card-selected-image" alt={`${title} poster`} src={poster_path} onError={handleImgOnError} />
+      <div className="image-container">
+        <NextImageCustom className="movie-card-selected-image" alt={`${title} poster`} src={poster_path} width={320} height={480} />
+      </div>
       <div className="movie-card-selected-content">
         <div className="movie-card-selected-content-header">
           <span className="movie-card-selected-title">{title}</span>

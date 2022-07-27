@@ -1,15 +1,14 @@
 import { useMemo } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { QueryParams } from '../models/QueryParams';
 import { initialQueryParams } from '../utils/initialQueryParams';
 
 export const useQueryParams = (): QueryParams => {
-  const { searchQuery } = useParams();
-  const [searchParams] = useSearchParams();
+  const router = useRouter();
 
-  const sortBy = searchParams.get('sortBy') ?? null;
-  const filter = searchParams.get('genre') ?? null;
-  const search = searchQuery ?? null;
+  const sortBy = (router.query.sortBy as string) ?? null;
+  const filter = (router.query.genre as string) ?? null;
+  const search = (router.query.search as string) ?? null;
 
   return useMemo(
     () => ({

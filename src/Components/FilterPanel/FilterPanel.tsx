@@ -1,6 +1,6 @@
 import { GenreToggleButton } from '../GenreToggleButton/GenreToggleButton';
 import { Genre } from '../../models/Genre';
-import './FilterPanel.scss';
+// import './FilterPanel.scss';
 
 interface GenreToggleProps {
   genres: Genre[];

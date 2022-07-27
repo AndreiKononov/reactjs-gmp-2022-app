@@ -1,4 +1,4 @@
-import './GenreToggleButton.scss';
+// import './GenreToggleButton.scss';
 
 interface GenreButtonProps {
   genreTitle: string;

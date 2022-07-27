@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Movie } from '../models/Movie';
 import { MoviesApiService } from './moviesApiService';
 
-interface FetchedMoviesState {
+export interface FetchedMoviesState {
   movies: Movie[];
   isLoading: boolean;
   isError: boolean;

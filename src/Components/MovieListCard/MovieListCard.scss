@@ -9,8 +9,7 @@
 
   .movies-list-card-image {
     flex-grow: 1;
-    max-width: 100%;
-    margin-bottom: 22px;
+    margin-bottom: 22px !important;
     object-fit: cover;
     cursor: pointer;
   }

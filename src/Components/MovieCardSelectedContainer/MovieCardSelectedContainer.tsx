@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { Logo } from '../Logo/Logo';
 import { Movie } from '../../models/Movie';
 import { MovieCardSelected } from '../MovieCardSelected/MovieCardSelected';
-import './MovieCardSelectedContainer.scss';
+// import './MovieCardSelectedContainer.scss';
 
 interface MovieCardSelectedContainerProps {
   movie: Movie | null;
@@ -14,12 +14,19 @@ interface MovieCardSelectedContainerProps {
 }
 
 function MovieCardSelectedContainerComponent({ movie, isLoading, isError }: MovieCardSelectedContainerProps) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const router = useRouter();
 
   const handleGoToSearch = useCallback(() => {
-    searchParams.delete('movie');
-    setSearchParams(searchParams);
-  }, [searchParams, setSearchParams]);
+    delete router.query.movie;
+    router.push(
+      {
+        pathname: router.pathname,
+        query: router.query,
+      },
+      undefined,
+      { shallow: true }
+    );
+  }, [router]);
 
   return (
     <div className="movie-card-selected-container">

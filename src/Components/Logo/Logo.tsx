@@ -1,4 +1,4 @@
-import './Logo.scss';
+// import './Logo.scss';
 
 export const Logo = () => (
   <a className="logo-link" href="/">

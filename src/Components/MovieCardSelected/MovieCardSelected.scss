@@ -6,8 +6,13 @@
   position: relative;
   margin-top: 27px;
 
-  .movie-card-selected-image {
-    max-width: 320px;
+  .image-container {
+    min-width: 320px;
+
+    .movie-card-selected-image {
+      max-width: 320px;
+      object-fit: cover;
+    }
   }
 
   .movie-card-selected-content {

@@ -1,4 +1,4 @@
-import './MoviesFound.scss';
+// import './MoviesFound.scss';
 
 interface MoviesFoundProps {
   numberOfMovies: number;

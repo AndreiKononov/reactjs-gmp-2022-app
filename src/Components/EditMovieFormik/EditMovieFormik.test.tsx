@@ -2,7 +2,6 @@ import { render, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { movies } from '../../mocks/movies';
@@ -11,15 +10,26 @@ import * as fromGetMovieFromFormValue from '../../utils/getMovieFromFormValue';
 import * as moviesReducerStore from '../../store/moviesReducer';
 import EditMovieFormik from './EditMovieFormik';
 
+const useRouter = jest.spyOn(require('next/router'), 'useRouter');
+
 describe('EditMovieFormik', () => {
   const mockStore = configureStore([thunk]);
   const store = mockStore();
   const mockHandleClose = jest.fn();
 
   beforeEach(() => {
-    jest.spyOn(store, 'dispatch').mockReturnValue({
-      unwrap() {},
-    });
+    jest.spyOn(store, 'dispatch').mockImplementation();
+  });
+
+  beforeEach(() => {
+    useRouter.mockImplementationOnce(() => ({
+      query: { sortBy: 'release_date' },
+      push: jest.fn(),
+    }));
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should render empty form when no movie is provided', () => {
@@ -68,9 +78,7 @@ describe('EditMovieFormik', () => {
   function renderEdieMovieFormikInProviderAndRouter(movie: Movie | null) {
     return render(
       <Provider store={store}>
-        <BrowserRouter>
-          <EditMovieFormik movie={movie} handleClose={mockHandleClose} />
-        </BrowserRouter>
+        <EditMovieFormik movie={movie} handleClose={mockHandleClose} />
       </Provider>
     );
   }

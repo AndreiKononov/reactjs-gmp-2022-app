@@ -1,0 +1,7 @@
+{
+  "extends": "next",
+  "rules": {
+    "testing-library/prefer-screen-queries": "off",
+    "react/display-name": "off"
+  }
+}

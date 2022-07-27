@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react';
-import './Hero.scss';
+// import './Hero.scss';
 
 export function Hero({ children }: PropsWithChildren<{}>) {
   return (

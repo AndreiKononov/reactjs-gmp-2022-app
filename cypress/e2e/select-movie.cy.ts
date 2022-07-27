@@ -3,7 +3,7 @@ import { movies } from '../../src/mocks/movies';
 describe('Select/Deselect Movie', () => {
   describe('Selecting movie from list', () => {
     beforeEach(() => {
-      cy.visit('http://localhost:8080/');
+      cy.visit('http://localhost:3000/');
     });
 
     it('does not display a selected movie card', () => {
@@ -55,7 +55,7 @@ describe('Select/Deselect Movie', () => {
 
   describe('Going back to search', () => {
     beforeEach(() => {
-      cy.visit(`http://localhost:8080/search?movie=${movies[1].id}`);
+      cy.visit(`http://localhost:3000/search?movie=${movies[1].id}`);
     });
 
     it('should hide open search form on search button click', () => {

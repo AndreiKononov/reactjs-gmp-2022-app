@@ -1,5 +1,4 @@
-import { useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { GenreTogglePanel as FilterPanel } from '../../components/FilterPanel/FilterPanel';
 import { MoviesFound } from '../../components/MoviesFound/MoviesFound';
 import { SortPanel } from '../../components/SortPanel/SortPanel';
@@ -8,22 +7,29 @@ import { sortOptions } from './sortOptions';
 import { SelectValue } from '../../models/SelectValue';
 import { Genre } from '../../models/Genre';
 import { useMovies } from '../../hooks/useMovies';
-import './MoviesListOptionsContainer.scss';
+// import './MoviesListOptionsContainer.scss';
 
 export function MoviesListOptionsContainer() {
   const { movies } = useMovies();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const router = useRouter();
 
   const handleQueryParamChange = (selectedItem: SelectValue | Genre, paramName: 'genre' | 'sortBy'): void => {
     const selectedValue: string = selectedItem.value;
 
     if (selectedValue) {
-      searchParams.set(paramName, selectedValue);
+      router.query[paramName] = selectedValue;
     } else {
-      searchParams.delete(paramName);
+      delete router.query[paramName];
     }
 
-    setSearchParams(searchParams);
+    router.push(
+      {
+        pathname: router.pathname,
+        query: router.query,
+      },
+      undefined,
+      { shallow: true }
+    );
   };
 
   const getSortByValue = (value: string | null): SelectValue | null => {
@@ -39,12 +45,12 @@ export function MoviesListOptionsContainer() {
       <div className="options-panel">
         <FilterPanel
           genres={genres}
-          selectedGenre={searchParams.get('genre')}
+          selectedGenre={router.query.genre as string}
           handleSelect={(selectedItem) => handleQueryParamChange(selectedItem, 'genre')}
         />
         <SortPanel
           sortOptions={sortOptions}
-          sortByValue={getSortByValue(searchParams.get('sortBy'))}
+          sortByValue={getSortByValue(router.query.sortBy as string)}
           handleSelect={(selectedItem) => handleQueryParamChange(selectedItem, 'sortBy')}
         />
       </div>

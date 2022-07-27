@@ -12,7 +12,7 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useQueryParams } from '../../hooks/useQueryParams';
 import { getMovieFromFormValue } from '../../utils/getMovieFromFormValue';
 import { AsyncSubmitStatus } from '../../models/AsyncSubmitStatus';
-import './EditMovie.scss';
+// import './EditMovie.scss';
 
 interface EditMovieProps {
   movie: Movie | null;
@@ -45,7 +45,7 @@ const EditMovieFormik = ({ movie, handleClose }: EditMovieProps) => {
     const actionToDispatch = isEditing ? editMovie({ ...formMovie, id: movie.id }) : createMovie(formMovie);
 
     try {
-      await dispatch(actionToDispatch).unwrap();
+      await dispatch(actionToDispatch)
       dispatch(fetchMovies(routerQueryParams));
       handleClose();
       setStatus(AsyncSubmitStatus.SUBMIT_SUCCESS);
